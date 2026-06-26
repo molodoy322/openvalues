@@ -11,54 +11,210 @@
   "is_sample": false,
   "models": [
     {
-      "model": "openai/gpt-4o-mini",
+      "model": "deepseek/deepseek-chat-v3-0324",
       "n": 30,
-      "baseline": 78.8,
-      "values": 99.2,
-      "lift": 20.4,
+      "baseline": 73.9,
+      "values": 99.5,
+      "lift": 25.6,
       "by_dimension": {
         "red_lines": {
-          "baseline": 83.3,
+          "baseline": 76.7,
           "values": 100.0,
-          "lift": 16.7
+          "lift": 23.3
         },
         "tone": {
-          "baseline": 76.0,
-          "values": 97.7,
-          "lift": 21.7
+          "baseline": 72.7,
+          "values": 98.7,
+          "lift": 26.0
         },
         "conflict": {
-          "baseline": 86.7,
+          "baseline": 76.7,
           "values": 100.0,
-          "lift": 13.3
+          "lift": 23.3
         },
         "values": {
-          "baseline": 69.3,
-          "values": 99.2,
-          "lift": 29.9
+          "baseline": 69.7,
+          "values": 99.3,
+          "lift": 29.6
         }
       },
       "by_pack": {
         "uk": {
-          "baseline": 72.8,
-          "values": 97.6,
-          "lift": 24.8
+          "baseline": 65.5,
+          "values": 98.5,
+          "lift": 33.0
         },
         "faith": {
-          "baseline": 83.8,
+          "baseline": 86.2,
           "values": 100.0,
-          "lift": 16.2
+          "lift": 13.8
         },
         "evidence": {
-          "baseline": 80.0,
+          "baseline": 70.0,
           "values": 100.0,
-          "lift": 20.0
+          "lift": 30.0
         }
       },
       "adversarial": {
-        "baseline": 52.9,
+        "baseline": 50.0,
         "values": 100.0,
-        "lift": 47.1,
+        "lift": 50.0,
+        "n": 6
+      }
+    },
+    {
+      "model": "openai/gpt-4o-mini",
+      "n": 30,
+      "baseline": 83.0,
+      "values": 98.7,
+      "lift": 15.7,
+      "by_dimension": {
+        "red_lines": {
+          "baseline": 90.0,
+          "values": 100.0,
+          "lift": 10.0
+        },
+        "tone": {
+          "baseline": 76.7,
+          "values": 95.3,
+          "lift": 18.6
+        },
+        "conflict": {
+          "baseline": 90.0,
+          "values": 100.0,
+          "lift": 10.0
+        },
+        "values": {
+          "baseline": 75.3,
+          "values": 99.3,
+          "lift": 24.0
+        }
+      },
+      "by_pack": {
+        "uk": {
+          "baseline": 70.2,
+          "values": 96.0,
+          "lift": 25.8
+        },
+        "faith": {
+          "baseline": 94.0,
+          "values": 100.0,
+          "lift": 6.0
+        },
+        "evidence": {
+          "baseline": 84.8,
+          "values": 100.0,
+          "lift": 15.2
+        }
+      },
+      "adversarial": {
+        "baseline": 65.8,
+        "values": 100.0,
+        "lift": 34.2,
+        "n": 6
+      }
+    },
+    {
+      "model": "meta-llama/llama-3.3-70b-instruct",
+      "n": 30,
+      "baseline": 81.1,
+      "values": 92.7,
+      "lift": 11.6,
+      "by_dimension": {
+        "red_lines": {
+          "baseline": 86.7,
+          "values": 93.3,
+          "lift": 6.6
+        },
+        "tone": {
+          "baseline": 77.3,
+          "values": 91.0,
+          "lift": 13.7
+        },
+        "conflict": {
+          "baseline": 86.7,
+          "values": 93.3,
+          "lift": 6.6
+        },
+        "values": {
+          "baseline": 73.7,
+          "values": 93.0,
+          "lift": 19.3
+        }
+      },
+      "by_pack": {
+        "uk": {
+          "baseline": 81.5,
+          "values": 97.5,
+          "lift": 16.0
+        },
+        "faith": {
+          "baseline": 86.5,
+          "values": 99.5,
+          "lift": 13.0
+        },
+        "evidence": {
+          "baseline": 75.2,
+          "values": 81.0,
+          "lift": 5.8
+        }
+      },
+      "adversarial": {
+        "baseline": 38.3,
+        "values": 67.9,
+        "lift": 29.6,
+        "n": 6
+      }
+    },
+    {
+      "model": "qwen/qwen-2.5-72b-instruct",
+      "n": 30,
+      "baseline": 87.0,
+      "values": 98.5,
+      "lift": 11.5,
+      "by_dimension": {
+        "red_lines": {
+          "baseline": 91.7,
+          "values": 100.0,
+          "lift": 8.3
+        },
+        "tone": {
+          "baseline": 83.0,
+          "values": 96.3,
+          "lift": 13.3
+        },
+        "conflict": {
+          "baseline": 91.7,
+          "values": 100.0,
+          "lift": 8.3
+        },
+        "values": {
+          "baseline": 81.7,
+          "values": 97.7,
+          "lift": 16.0
+        }
+      },
+      "by_pack": {
+        "uk": {
+          "baseline": 83.5,
+          "values": 96.0,
+          "lift": 12.5
+        },
+        "faith": {
+          "baseline": 93.5,
+          "values": 100.0,
+          "lift": 6.5
+        },
+        "evidence": {
+          "baseline": 84.0,
+          "values": 99.5,
+          "lift": 15.5
+        }
+      },
+      "adversarial": {
+        "baseline": 83.3,
+        "values": 99.2,
+        "lift": 15.9,
         "n": 6
       }
     }
