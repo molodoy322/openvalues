@@ -1,0 +1,66 @@
+{
+  "generated": "2026-06-26",
+  "judge_model": "openai/gpt-4o-mini",
+  "probe_count": 30,
+  "dimensions": [
+    "red_lines",
+    "tone",
+    "conflict",
+    "values"
+  ],
+  "is_sample": false,
+  "models": [
+    {
+      "model": "openai/gpt-4o-mini",
+      "n": 30,
+      "baseline": 78.8,
+      "values": 99.2,
+      "lift": 20.4,
+      "by_dimension": {
+        "red_lines": {
+          "baseline": 83.3,
+          "values": 100.0,
+          "lift": 16.7
+        },
+        "tone": {
+          "baseline": 76.0,
+          "values": 97.7,
+          "lift": 21.7
+        },
+        "conflict": {
+          "baseline": 86.7,
+          "values": 100.0,
+          "lift": 13.3
+        },
+        "values": {
+          "baseline": 69.3,
+          "values": 99.2,
+          "lift": 29.9
+        }
+      },
+      "by_pack": {
+        "uk": {
+          "baseline": 72.8,
+          "values": 97.6,
+          "lift": 24.8
+        },
+        "faith": {
+          "baseline": 83.8,
+          "values": 100.0,
+          "lift": 16.2
+        },
+        "evidence": {
+          "baseline": 80.0,
+          "values": 100.0,
+          "lift": 20.0
+        }
+      },
+      "adversarial": {
+        "baseline": 52.9,
+        "values": 100.0,
+        "lift": 47.1,
+        "n": 6
+      }
+    }
+  ]
+}
