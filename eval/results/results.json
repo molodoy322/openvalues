@@ -1,46 +1,222 @@
 {
-  "generated": "2026-06-25",
-  "judge_model": "deepseek/deepseek-chat-v3-0324:free",
+  "generated": "2026-06-26",
+  "judge_model": "openai/gpt-4o-mini",
   "probe_count": 30,
-  "dimensions": ["red_lines", "tone", "conflict", "values"],
-  "is_sample": true,
-  "note": "ILLUSTRATIVE SAMPLE — placeholder numbers so the leaderboard renders. Run run_eval.py with your own OpenRouter key to replace this with real measurements.",
+  "dimensions": [
+    "red_lines",
+    "tone",
+    "conflict",
+    "values"
+  ],
+  "is_sample": false,
   "models": [
-    {"model": "openai/gpt-4o-mini", "n": 30, "baseline": 60.8, "values": 88.1, "lift": 27.3,
-     "by_dimension": {"red_lines": {"baseline": 58.0, "values": 90.5, "lift": 32.5},
-                       "tone": {"baseline": 63.1, "values": 86.0, "lift": 22.9},
-                       "conflict": {"baseline": 59.4, "values": 86.8, "lift": 27.4},
-                       "values": {"baseline": 62.7, "values": 89.1, "lift": 26.4}},
-     "by_pack": {"uk": {"baseline": 56.5, "values": 89.8, "lift": 33.3},
-                  "faith": {"baseline": 63.7, "values": 87.2, "lift": 23.5},
-                  "evidence": {"baseline": 62.2, "values": 87.3, "lift": 25.1}},
-     "adversarial": {"baseline": 41.2, "values": 84.6, "lift": 43.4, "n": 6}},
-    {"model": "qwen/qwen-2.5-72b-instruct:free", "n": 30, "baseline": 51.9, "values": 83.7, "lift": 31.8,
-     "by_dimension": {"red_lines": {"baseline": 47.0, "values": 86.0, "lift": 39.0},
-                       "tone": {"baseline": 55.2, "values": 82.1, "lift": 26.9},
-                       "conflict": {"baseline": 50.3, "values": 82.4, "lift": 32.1},
-                       "values": {"baseline": 55.1, "values": 84.3, "lift": 29.2}},
-     "by_pack": {"uk": {"baseline": 48.2, "values": 85.9, "lift": 37.7},
-                  "faith": {"baseline": 54.6, "values": 82.6, "lift": 28.0},
-                  "evidence": {"baseline": 53.0, "values": 82.7, "lift": 29.7}},
-     "adversarial": {"baseline": 35.5, "values": 80.1, "lift": 44.6, "n": 6}},
-    {"model": "meta-llama/llama-3.3-70b-instruct:free", "n": 30, "baseline": 54.6, "values": 82.2, "lift": 27.6,
-     "by_dimension": {"red_lines": {"baseline": 50.1, "values": 84.4, "lift": 34.3},
-                       "tone": {"baseline": 58.0, "values": 80.6, "lift": 22.6},
-                       "conflict": {"baseline": 53.2, "values": 81.0, "lift": 27.8},
-                       "values": {"baseline": 57.1, "values": 82.8, "lift": 25.7}},
-     "by_pack": {"uk": {"baseline": 49.8, "values": 83.7, "lift": 33.9},
-                  "faith": {"baseline": 58.1, "values": 81.2, "lift": 23.1},
-                  "evidence": {"baseline": 55.9, "values": 81.7, "lift": 25.8}},
-     "adversarial": {"baseline": 38.0, "values": 78.4, "lift": 40.4, "n": 6}},
-    {"model": "deepseek/deepseek-chat-v3-0324:free", "n": 30, "baseline": 58.3, "values": 80.6, "lift": 22.3,
-     "by_dimension": {"red_lines": {"baseline": 54.0, "values": 83.1, "lift": 29.1},
-                       "tone": {"baseline": 61.2, "values": 79.0, "lift": 17.8},
-                       "conflict": {"baseline": 57.1, "values": 79.5, "lift": 22.4},
-                       "values": {"baseline": 60.9, "values": 80.8, "lift": 19.9}},
-     "by_pack": {"uk": {"baseline": 53.7, "values": 82.2, "lift": 28.5},
-                  "faith": {"baseline": 61.5, "values": 80.0, "lift": 18.5},
-                  "evidence": {"baseline": 59.8, "values": 79.6, "lift": 19.8}},
-     "adversarial": {"baseline": 44.1, "values": 76.9, "lift": 32.8, "n": 6}}
+    {
+      "model": "deepseek/deepseek-chat-v3-0324",
+      "n": 30,
+      "baseline": 73.9,
+      "values": 99.5,
+      "lift": 25.6,
+      "by_dimension": {
+        "red_lines": {
+          "baseline": 76.7,
+          "values": 100.0,
+          "lift": 23.3
+        },
+        "tone": {
+          "baseline": 72.7,
+          "values": 98.7,
+          "lift": 26.0
+        },
+        "conflict": {
+          "baseline": 76.7,
+          "values": 100.0,
+          "lift": 23.3
+        },
+        "values": {
+          "baseline": 69.7,
+          "values": 99.3,
+          "lift": 29.6
+        }
+      },
+      "by_pack": {
+        "uk": {
+          "baseline": 65.5,
+          "values": 98.5,
+          "lift": 33.0
+        },
+        "faith": {
+          "baseline": 86.2,
+          "values": 100.0,
+          "lift": 13.8
+        },
+        "evidence": {
+          "baseline": 70.0,
+          "values": 100.0,
+          "lift": 30.0
+        }
+      },
+      "adversarial": {
+        "baseline": 50.0,
+        "values": 100.0,
+        "lift": 50.0,
+        "n": 6
+      }
+    },
+    {
+      "model": "openai/gpt-4o-mini",
+      "n": 30,
+      "baseline": 83.0,
+      "values": 98.7,
+      "lift": 15.7,
+      "by_dimension": {
+        "red_lines": {
+          "baseline": 90.0,
+          "values": 100.0,
+          "lift": 10.0
+        },
+        "tone": {
+          "baseline": 76.7,
+          "values": 95.3,
+          "lift": 18.6
+        },
+        "conflict": {
+          "baseline": 90.0,
+          "values": 100.0,
+          "lift": 10.0
+        },
+        "values": {
+          "baseline": 75.3,
+          "values": 99.3,
+          "lift": 24.0
+        }
+      },
+      "by_pack": {
+        "uk": {
+          "baseline": 70.2,
+          "values": 96.0,
+          "lift": 25.8
+        },
+        "faith": {
+          "baseline": 94.0,
+          "values": 100.0,
+          "lift": 6.0
+        },
+        "evidence": {
+          "baseline": 84.8,
+          "values": 100.0,
+          "lift": 15.2
+        }
+      },
+      "adversarial": {
+        "baseline": 65.8,
+        "values": 100.0,
+        "lift": 34.2,
+        "n": 6
+      }
+    },
+    {
+      "model": "meta-llama/llama-3.3-70b-instruct",
+      "n": 30,
+      "baseline": 81.1,
+      "values": 92.7,
+      "lift": 11.6,
+      "by_dimension": {
+        "red_lines": {
+          "baseline": 86.7,
+          "values": 93.3,
+          "lift": 6.6
+        },
+        "tone": {
+          "baseline": 77.3,
+          "values": 91.0,
+          "lift": 13.7
+        },
+        "conflict": {
+          "baseline": 86.7,
+          "values": 93.3,
+          "lift": 6.6
+        },
+        "values": {
+          "baseline": 73.7,
+          "values": 93.0,
+          "lift": 19.3
+        }
+      },
+      "by_pack": {
+        "uk": {
+          "baseline": 81.5,
+          "values": 97.5,
+          "lift": 16.0
+        },
+        "faith": {
+          "baseline": 86.5,
+          "values": 99.5,
+          "lift": 13.0
+        },
+        "evidence": {
+          "baseline": 75.2,
+          "values": 81.0,
+          "lift": 5.8
+        }
+      },
+      "adversarial": {
+        "baseline": 38.3,
+        "values": 67.9,
+        "lift": 29.6,
+        "n": 6
+      }
+    },
+    {
+      "model": "qwen/qwen-2.5-72b-instruct",
+      "n": 30,
+      "baseline": 87.0,
+      "values": 98.5,
+      "lift": 11.5,
+      "by_dimension": {
+        "red_lines": {
+          "baseline": 91.7,
+          "values": 100.0,
+          "lift": 8.3
+        },
+        "tone": {
+          "baseline": 83.0,
+          "values": 96.3,
+          "lift": 13.3
+        },
+        "conflict": {
+          "baseline": 91.7,
+          "values": 100.0,
+          "lift": 8.3
+        },
+        "values": {
+          "baseline": 81.7,
+          "values": 97.7,
+          "lift": 16.0
+        }
+      },
+      "by_pack": {
+        "uk": {
+          "baseline": 83.5,
+          "values": 96.0,
+          "lift": 12.5
+        },
+        "faith": {
+          "baseline": 93.5,
+          "values": 100.0,
+          "lift": 6.5
+        },
+        "evidence": {
+          "baseline": 84.0,
+          "values": 99.5,
+          "lift": 15.5
+        }
+      },
+      "adversarial": {
+        "baseline": 83.3,
+        "values": 99.2,
+        "lift": 15.9,
+        "n": 6
+      }
+    }
   ]
 }
