@@ -1,0 +1,12 @@
+{
+  "schema": "openvalues-catalog/v1",
+  "description": "Community library of OpenValues packs. A pack is a portable, human-readable values file (openvalues/v1) you attach to any AI. Fork one, edit it, or contribute your own.",
+  "packs": [
+    {"id": "ukraine-media-literacy", "file": "ukraine-media-literacy.md", "language": "uk", "title": "Ukrainian media literacy", "description": "Stay informed without being manipulated — for people living through an information war."},
+    {"id": "faith-context", "file": "faith-context.md", "language": "en", "title": "Faith context", "description": "Guidance consistent with a person's religious framework."},
+    {"id": "evidence-first", "file": "evidence-first.md", "language": "en", "title": "Evidence first", "description": "Reason from evidence, avoid confident nonsense and flattery."},
+    {"id": "elder-companion", "file": "elder-companion.md", "language": "en", "title": "Elder companion", "description": "A patient, scam-aware companion that points an older person toward real people."},
+    {"id": "child-online-safety", "file": "child-online-safety.md", "language": "en", "title": "Child online safety", "description": "Age-appropriate, kind, and safe — set by a parent for a child's AI use."},
+    {"id": "accessibility", "file": "accessibility.md", "language": "en", "title": "Accessibility", "description": "Clear, screen-reader-friendly, plain-language responses."}
+  ]
+}

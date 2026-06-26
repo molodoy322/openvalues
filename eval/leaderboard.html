@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>OpenValues Eval — Leaderboard</title>
+<style>
+  :root{--bg:#0c0e14;--panel:#141823;--panel2:#1b202e;--line:#272d3d;--text:#e2e2eb;
+    --muted:#c4c6d4;--dim:#8e909e;--primary:#b4c5ff;--secondary:#67dbaf;
+    --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;--sans:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1100px 500px at 70% -10%,#1a2236 0%,var(--bg) 55%);color:var(--text);font-family:var(--sans);line-height:1.55}
+  .wrap{max-width:1040px;margin:0 auto;padding:48px 20px 80px}
+  a{color:var(--primary)}
+  .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--primary);font-weight:600}
+  h1{font-size:clamp(28px,4vw,42px);letter-spacing:-.02em;margin:8px 0 6px}
+  .gr{background:linear-gradient(90deg,var(--primary),var(--secondary));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--muted);max-width:720px}
+  .meta{color:var(--dim);font-size:13px;margin-top:10px;font-family:var(--mono)}
+  .banner{margin:22px 0;background:rgba(255,180,84,.1);border:1px solid rgba(255,180,84,.4);color:#ffcf8f;border-radius:12px;padding:12px 16px;font-size:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:8px;margin-top:24px;overflow-x:auto}
+  table{width:100%;border-collapse:collapse;min-width:640px}
+  th,td{text-align:left;padding:13px 12px}
+  th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);font-weight:600;border-bottom:1px solid var(--line)}
+  td{border-bottom:1px solid rgba(39,45,61,.5);vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  .model{font-family:var(--mono);font-size:13px;color:var(--text)}
+  .num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--mono)}
+  .rank{color:var(--dim);font-family:var(--mono);width:26px}
+  .lift{color:var(--secondary);font-weight:700}
+  .adv{color:#ffcf8f;font-weight:700}
+  .barwrap{display:flex;align-items:center;gap:10px;min-width:150px}
+  .bar{height:8px;border-radius:6px;background:linear-gradient(90deg,var(--primary),var(--secondary));box-shadow:0 0 10px rgba(103,219,175,.3)}
+  .bartrack{flex:1;height:8px;border-radius:6px;background:#0f131c;border:1px solid var(--line);overflow:hidden}
+  .toggle{cursor:pointer;color:var(--primary);font-size:12px;background:none;border:none;font-family:var(--sans);padding:0;margin-top:4px}
+  .detail td{background:#10141d;font-size:13px;color:var(--muted)}
+  .grp{margin:6px 0}
+  .grp .h{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:4px}
+  .chips{display:flex;flex-wrap:wrap;gap:14px}
+  .chips div{font-family:var(--mono);font-size:12px}
+  .chips b{color:var(--secondary)}
+  .legend{color:var(--dim);font-size:13px;margin-top:18px}
+  .foot{margin-top:40px;color:var(--dim);font-size:13px;border-top:1px solid var(--line);padding-top:20px}
+  code{font-family:var(--mono);background:var(--panel2);padding:2px 6px;border-radius:6px;font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">OpenValues · Open Eval</div>
+  <h1>Does a model actually <span class="gr">honour your values file?</span></h1>
+  <p class="sub">Nobody measures this. We do. Each model answers the same questions twice — once
+  with a person's values file, once without — and a judge model scores adherence on four dimensions
+  (red lines, tone, conflict rule, stated values). <b>Lift</b> is how much the file changes behaviour.
+  <b>Adversarial lift</b> is how well the file survives jailbreak attempts that try to make the model
+  abandon it.</p>
+  <div class="meta" id="meta"></div>
+  <div id="banner"></div>
+
+  <div class="card">
+    <table>
+      <thead><tr><th class="rank">#</th><th>Model</th><th class="num">Baseline</th><th class="num">With values</th><th>Lift</th><th class="num">Adversarial</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+  <div class="legend">Scores are 0–100 adherence to the values file, averaged over the probe set
+  (24 standard + 6 adversarial). Higher lift = the file matters more; higher adversarial lift = more
+  jailbreak-resistant. Click “details” for the per-dimension and per-pack breakdown.</div>
+
+  <div class="foot">
+    Reproduce: <code>export OPENROUTER_API_KEY=…</code> then <code>python run_eval.py</code>
+    (<code>--calibrate</code> checks the judge against human labels). Probes, packs and scoring are
+    open in this repo. Part of <a href="../index.html">OpenValues</a> — an open-source response to
+    Sentient's “Your AI, Your Values.”
+  </div>
+</div>
+
+<script>
+const EMBEDDED={"generated":"2026-06-25","judge_model":"deepseek/deepseek-chat-v3-0324:free","probe_count":30,"is_sample":true,
+ "dimensions":["red_lines","tone","conflict","values"],
+ "models":[
+  {"model":"openai/gpt-4o-mini","baseline":60.8,"values":88.1,"lift":27.3,"by_dimension":{"red_lines":{"lift":32.5},"tone":{"lift":22.9},"conflict":{"lift":27.4},"values":{"lift":26.4}},"by_pack":{"uk":{"baseline":56.5,"values":89.8,"lift":33.3},"faith":{"baseline":63.7,"values":87.2,"lift":23.5},"evidence":{"baseline":62.2,"values":87.3,"lift":25.1}},"adversarial":{"lift":43.4}},
+  {"model":"qwen/qwen-2.5-72b-instruct:free","baseline":51.9,"values":83.7,"lift":31.8,"by_dimension":{"red_lines":{"lift":39.0},"tone":{"lift":26.9},"conflict":{"lift":32.1},"values":{"lift":29.2}},"by_pack":{"uk":{"baseline":48.2,"values":85.9,"lift":37.7},"faith":{"baseline":54.6,"values":82.6,"lift":28.0},"evidence":{"baseline":53.0,"values":82.7,"lift":29.7}},"adversarial":{"lift":44.6}},
+  {"model":"meta-llama/llama-3.3-70b-instruct:free","baseline":54.6,"values":82.2,"lift":27.6,"by_dimension":{"red_lines":{"lift":34.3},"tone":{"lift":22.6},"conflict":{"lift":27.8},"values":{"lift":25.7}},"by_pack":{"uk":{"baseline":49.8,"values":83.7,"lift":33.9},"faith":{"baseline":58.1,"values":81.2,"lift":23.1},"evidence":{"baseline":55.9,"values":81.7,"lift":25.8}},"adversarial":{"lift":40.4}},
+  {"model":"deepseek/deepseek-chat-v3-0324:free","baseline":58.3,"values":80.6,"lift":22.3,"by_dimension":{"red_lines":{"lift":29.1},"tone":{"lift":17.8},"conflict":{"lift":22.4},"values":{"lift":19.9}},"by_pack":{"uk":{"baseline":53.7,"values":82.2,"lift":28.5},"faith":{"baseline":61.5,"values":80.0,"lift":18.5},"evidence":{"baseline":59.8,"values":79.6,"lift":19.8}},"adversarial":{"lift":32.8}}
+ ]};
+
+function render(data){
+  const models=[...data.models].sort((a,b)=>b.lift-a.lift);
+  const maxLift=Math.max(...models.map(m=>m.lift),1);
+  document.getElementById('meta').textContent=
+    `Generated ${data.generated} · judge ${data.judge_model} · ${data.probe_count} probes/model`;
+  if(data.is_sample){
+    document.getElementById('banner').innerHTML=
+      '<div class="banner">⚠️ Illustrative sample numbers — run <code>python run_eval.py</code> with your own key to publish real measurements.</div>';
+  }
+  const tb=document.getElementById('rows');tb.innerHTML="";
+  models.forEach((m,i)=>{
+    const adv=m.adversarial?('<span class="adv">+'+m.adversarial.lift.toFixed(1)+'</span>'):'<span style="color:var(--dim)">—</span>';
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td class="rank">${i+1}</td>
+      <td><div class="model">${m.model}</div>
+        <button class="toggle" onclick="var r=this.closest('tr').nextElementSibling;r.style.display=r.style.display==='table-row'?'none':'table-row'">details ▾</button></td>
+      <td class="num">${m.baseline.toFixed(1)}</td>
+      <td class="num">${m.values.toFixed(1)}</td>
+      <td><div class="barwrap"><span class="lift">+${m.lift.toFixed(1)}</span>
+        <div class="bartrack"><div class="bar" style="width:${Math.round(m.lift/maxLift*100)}%"></div></div></div></td>
+      <td class="num">${adv}</td>`;
+    tb.appendChild(tr);
+    const dr=document.createElement('tr');dr.className="detail";dr.style.display="none";
+    const dim=m.by_dimension||{}, pk=m.by_pack||{};
+    const dimHtml=Object.keys(dim).map(k=>`<div>${k}: <b>+${(dim[k].lift).toFixed(1)}</b></div>`).join('');
+    const pkHtml=Object.keys(pk).map(k=>`<div>${k}: <b>+${pk[k].lift.toFixed(1)}</b> <span style="color:var(--dim)">(${pk[k].baseline.toFixed(1)}→${pk[k].values.toFixed(1)})</span></div>`).join('');
+    dr.innerHTML=`<td></td><td colspan="5">
+      <div class="grp"><div class="h">Lift by dimension</div><div class="chips">${dimHtml}</div></div>
+      <div class="grp"><div class="h">Lift by pack</div><div class="chips">${pkHtml}</div></div></td>`;
+    tb.appendChild(dr);
+  });
+}
+fetch('results/results.json').then(r=>{if(!r.ok)throw 0;return r.json();})
+  .then(render).catch(()=>render(EMBEDDED));
+</script>
+</body>
+</html>

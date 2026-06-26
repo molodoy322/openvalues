@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>OpenValues | Your AI should answer to YOU</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@600&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode:"class",
+    theme:{extend:{
+      colors:{
+        "on-background":"#e2e2eb","primary-container":"#7c9cff","secondary":"#67dbaf",
+        "primary":"#b4c5ff","secondary-container":"#24a37c","on-surface":"#e2e2eb",
+        "outline-variant":"#444652","surface-tint":"#b4c5ff","surface-variant":"#33343b",
+        "error":"#ffb4ab","surface":"#111319","surface-dim":"#111319",
+        "surface-container-lowest":"#0c0e14","surface-container-highest":"#33343b",
+        "surface-bright":"#373940","outline":"#8e909e","surface-container-low":"#191b22",
+        "surface-container":"#1e1f26","surface-container-high":"#282a30",
+        "secondary-fixed":"#85f8cb","on-surface-variant":"#c4c6d4",
+        "on-tertiary-fixed-variant":"#9aa3b8","tertiary":"#c2c6d9","background":"#111319",
+        "error-container":"#ffb4ab"
+      },
+      borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px","14px":"14px"},
+      spacing:{"gutter":"24px","xs":"4px","base":"8px","xl":"80px","container-max":"1200px",
+        "lg":"48px","md":"24px","sm":"12px","margin":"32px"},
+      fontFamily:{"label-caps":["Geist"],"body-lg":["Inter"],"body-md":["Inter"],
+        "code-snippet":["JetBrains Mono"],"headline-md":["Inter"],"display-lg":["Inter"],
+        "display-lg-mobile":["Inter"]},
+      fontSize:{
+        "label-caps":["12px",{"lineHeight":"1.2","letterSpacing":"0.1em","fontWeight":"600"}],
+        "body-lg":["18px",{"lineHeight":"1.6","fontWeight":"400"}],
+        "body-md":["16px",{"lineHeight":"1.6","fontWeight":"400"}],
+        "code-snippet":["14px",{"lineHeight":"1.5","fontWeight":"400"}],
+        "headline-md":["32px",{"lineHeight":"1.2","letterSpacing":"-0.02em","fontWeight":"600"}],
+        "display-lg":["64px",{"lineHeight":"1.1","letterSpacing":"-0.04em","fontWeight":"700"}],
+        "display-lg-mobile":["40px",{"lineHeight":"1.1","letterSpacing":"-0.03em","fontWeight":"700"}]
+      }
+    }}
+  }
+</script>
+<style>
+  body{background-color:#0c0e14;color:#e2e2eb;overflow-x:hidden}
+  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24}
+  .gradient-text{background:linear-gradient(90deg,#b4c5ff 0%,#67dbaf 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+  .bg-radial-glow{background:radial-gradient(circle at center,rgba(124,156,255,.1) 0%,rgba(12,14,20,0) 70%)}
+  .btn-primary{background:linear-gradient(90deg,#b4c5ff 0%,#67dbaf 100%);color:#0c0e14;transition:all .2s ease}
+  .btn-primary:hover{filter:brightness(1.1)}
+  .btn-primary:disabled{opacity:.6;cursor:default}
+  .btn-ghost{background:transparent;border:1px solid #272d3d;color:#e2e2eb;transition:all .2s ease}
+  .btn-ghost:hover{background:rgba(255,255,255,.05);color:#b4c5ff}
+  .glass-border{border:1px solid rgba(255,255,255,.06)}
+  .chip{background:#1b202e;border:1px solid #2b3242;color:#e2e2eb;cursor:pointer;transition:all .15s ease}
+  .chip:hover{border-color:#b4c5ff}
+  .chip-selected{background:linear-gradient(90deg,rgba(180,197,255,.14) 0%,rgba(103,219,175,.14) 100%);border:1px solid #b4c5ff;color:#b4c5ff}
+  .code-tab-active{border-bottom:2px solid;border-image:linear-gradient(90deg,#b4c5ff 0%,#67dbaf 100%) 1;color:#e2e2eb}
+  .field{background:#0f131c;border:1px solid #272d3d;border-radius:8px;color:#e2e2eb;transition:.15s}
+  .field:focus{outline:none;border-color:#b4c5ff;box-shadow:0 0 0 2px rgba(180,197,255,.2)}
+  .field::placeholder{color:#7f879b}
+  .lang-btn{border:1px solid #2b3242;color:#c4c6d4;border-radius:999px;padding:6px 12px;font-size:12px;font-weight:600;letter-spacing:.06em;cursor:pointer;transition:.15s}
+  .lang-btn:hover{border-color:#b4c5ff;color:#b4c5ff}
+  .spinner{width:15px;height:15px;border:2px solid rgba(255,255,255,.3);border-top-color:#0c0e14;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#67dbaf;color:#06140e;padding:11px 18px;border-radius:10px;font-weight:600;opacity:0;pointer-events:none;transition:.25s;z-index:80}
+  .toast.show{opacity:1}
+  ::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:#272d3d;border-radius:8px}
+</style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+
+<header class="fixed top-0 z-50 w-full bg-surface/80 backdrop-blur-md border-b border-white/10">
+  <div class="flex justify-between items-center px-gutter md:px-margin max-w-container-max mx-auto h-20">
+    <span class="font-headline-md text-[22px] font-bold tracking-tight text-on-surface">OpenValues</span>
+    <nav class="hidden md:flex items-center gap-8">
+      <a class="text-on-surface-variant hover:text-secondary-fixed transition-colors font-label-caps text-label-caps" href="#interview" data-i18n="nav_build">Build</a>
+      <a class="text-on-surface-variant hover:text-secondary-fixed transition-colors font-label-caps text-label-caps" href="#demo" data-i18n="nav_demo">Demo</a>
+      <a class="text-on-surface-variant hover:text-secondary-fixed transition-colors font-label-caps text-label-caps" href="#open" data-i18n="nav_open">Why open</a>
+      <a class="text-on-surface-variant hover:text-secondary-fixed transition-colors font-label-caps text-label-caps" href="eval/leaderboard.html" data-i18n="nav_eval">Eval</a>
+      <a class="text-on-surface-variant hover:text-secondary-fixed transition-colors font-label-caps text-label-caps" href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+    <div class="flex items-center gap-3">
+      <button id="langBtn" class="lang-btn" onclick="toggleLang()">UA</button>
+      <a href="#interview" class="btn-primary px-5 py-2.5 rounded-14px font-label-caps text-label-caps font-bold" data-i18n="cta_build">Build my file</a>
+    </div>
+  </div>
+</header>
+
+<main class="flex-grow pt-24 pb-xl">
+
+  <section class="relative min-h-[70vh] flex flex-col items-center justify-center px-gutter md:px-margin max-w-container-max mx-auto text-center mb-xl">
+    <div class="absolute inset-0 bg-radial-glow z-0 pointer-events-none"></div>
+    <div class="z-10 flex flex-col items-center gap-8">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface-container-high border glass-border text-on-surface-variant font-label-caps text-label-caps">
+        <span class="material-symbols-outlined text-[16px]">lock_open</span> <span data-i18n="badge">Open source · runs on your device · no account</span>
+      </div>
+      <h1 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface max-w-4xl tracking-tight">
+        <span data-i18n="hero_h1a">Your AI should answer to</span> <span class="gradient-text font-bold" data-i18n="hero_h1b">YOU</span>
+      </h1>
+      <p class="font-body-lg text-body-lg text-on-surface max-w-2xl opacity-90" data-i18n="hero_sub">
+        A handful of labs decide how every AI thinks — one set of values for billions. OpenValues turns your values into a small, readable file you attach to any model. No retraining. Read every line, edit it, revoke it.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4 mt-2">
+        <span class="px-4 py-2 rounded-full bg-[#141823] glass-border font-label-caps text-label-caps text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">public</span> <span data-i18n="pill_open">Open</span></span>
+        <span class="px-4 py-2 rounded-full bg-[#141823] glass-border font-label-caps text-label-caps text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-secondary">data_object</span> <span data-i18n="pill_portable">Portable</span></span>
+        <span class="px-4 py-2 rounded-full bg-[#141823] glass-border font-label-caps text-label-caps text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-primary">shield</span> <span data-i18n="pill_private">Private</span></span>
+        <span class="px-4 py-2 rounded-full bg-[#141823] glass-border font-label-caps text-label-caps text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-secondary">person</span> <span data-i18n="pill_yours">Yours</span></span>
+      </div>
+    </div>
+  </section>
+
+  <section id="interview" class="px-gutter md:px-margin max-w-container-max mx-auto mb-xl scroll-mt-24">
+    <div class="bg-[#141823] rounded-14px glass-border p-md md:p-lg flex flex-col gap-6 relative overflow-hidden shadow-[0_8px_24px_rgba(0,0,0,0.2)]">
+      <div class="absolute top-0 right-0 p-6 opacity-10 pointer-events-none"><span class="material-symbols-outlined text-[120px] font-light">psychology</span></div>
+
+      <div class="flex flex-col gap-2 relative z-10">
+        <span class="font-label-caps text-label-caps text-primary" data-i18n="step1">Step 1</span>
+        <h2 class="font-headline-md text-headline-md text-on-surface" data-i18n="s1_title">Who are you? What do you value?</h2>
+        <p class="font-body-md text-body-md text-on-surface-variant max-w-xl" data-i18n="s1_sub">Tell the AI what matters to you. Nothing leaves your device. Or load a community starter and edit.</p>
+      </div>
+
+      <div class="flex flex-wrap gap-4 relative z-10">
+        <button onclick="loadStarter('uk')" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-[#1b202e] border border-[#3a4258] hover:border-primary transition-colors"><span class="text-2xl">🇺🇦</span><span class="font-body-md text-body-md text-on-surface" data-i18n="starter_uk">Ukrainian Context</span></button>
+        <button onclick="loadStarter('faith')" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-[#1b202e] border border-[#3a4258] hover:border-primary transition-colors"><span class="material-symbols-outlined text-secondary">balance</span><span class="font-body-md text-body-md text-on-surface" data-i18n="starter_faith">Faith &amp; Ethics</span></button>
+        <button onclick="clearAll()" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-transparent border border-[#272d3d] hover:border-primary transition-colors text-on-surface-variant"><span class="material-symbols-outlined text-[18px]">restart_alt</span><span class="font-body-md text-body-md" data-i18n="clear">Clear</span></button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+        <div class="flex flex-col gap-2">
+          <label class="font-label-caps text-label-caps text-on-surface-variant" data-i18n="lbl_who">Who are you, in one line?</label>
+          <textarea id="who" rows="2" class="field p-3 font-body-md text-body-md" data-i18n-ph="ph_who"></textarea>
+        </div>
+        <div class="flex flex-col gap-2">
+          <label class="font-label-caps text-label-caps text-on-surface-variant" data-i18n="lbl_culture">Cultural / language context</label>
+          <textarea id="culture" rows="2" class="field p-3 font-body-md text-body-md" data-i18n-ph="ph_culture"></textarea>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-3 relative z-10">
+        <label class="font-label-caps text-label-caps text-on-surface-variant" data-i18n="lbl_values">Core values — tap any that fit</label>
+        <div class="flex flex-wrap gap-3" id="valChips"></div>
+        <textarea id="values" rows="2" class="field p-3 font-body-md text-body-md mt-1" data-i18n-ph="ph_values"></textarea>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+        <div class="flex flex-col gap-2">
+          <label class="font-label-caps text-label-caps text-on-surface-variant" data-i18n="lbl_redlines">Your red lines (do not cross)</label>
+          <textarea id="redlines" rows="3" class="field p-3 font-body-md text-body-md" data-i18n-ph="ph_redlines"></textarea>
+        </div>
+        <div class="flex flex-col gap-2">
+          <label class="font-label-caps text-label-caps text-on-surface-variant" data-i18n="lbl_conflict">When values conflict, what wins?</label>
+          <textarea id="conflict" rows="3" class="field p-3 font-body-md text-body-md" data-i18n-ph="ph_conflict"></textarea>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-3 relative z-10">
+        <label class="font-label-caps text-label-caps text-on-surface-variant" data-i18n="lbl_tone">How should it talk to you?</label>
+        <div class="flex flex-wrap gap-3" id="toneChips"></div>
+      </div>
+
+      <div class="mt-2 flex justify-end relative z-10">
+        <button onclick="generate()" class="btn-primary px-8 py-3 rounded-14px font-label-caps text-label-caps font-bold flex items-center gap-2"><span data-i18n="btn_generate">Generate my values file</span> <span class="material-symbols-outlined text-[18px]">arrow_forward</span></button>
+      </div>
+    </div>
+  </section>
+
+  <section id="fileSection" class="px-gutter md:px-margin max-w-container-max mx-auto mb-xl scroll-mt-24" style="display:none">
+    <div class="flex flex-col md:flex-row gap-8 items-start">
+      <div class="md:w-1/3 flex flex-col gap-4">
+        <span class="font-label-caps text-label-caps text-secondary" data-i18n="step2">Step 2</span>
+        <h2 class="font-headline-md text-headline-md text-on-surface" data-i18n="s2_title">Your values file</h2>
+        <p class="font-body-md text-body-md text-on-surface-variant" data-i18n="s2_sub">Every line is readable and editable — that's the whole point. Works with ChatGPT, Claude, Llama, or any local model.</p>
+        <div class="flex flex-col gap-3 mt-2">
+          <button onclick="copyFile()" class="btn-ghost px-6 py-3 rounded-14px font-label-caps text-label-caps w-full flex justify-between items-center group"><span data-i18n="btn_copysys">Copy as system prompt</span> <span class="material-symbols-outlined text-[18px] opacity-50 group-hover:opacity-100">content_copy</span></button>
+          <button onclick="download('md')" class="btn-ghost px-6 py-3 rounded-14px font-label-caps text-label-caps w-full flex justify-between items-center group"><span data-i18n="btn_dl_md">Download .md</span> <span class="material-symbols-outlined text-[18px] opacity-50 group-hover:opacity-100">download</span></button>
+          <button onclick="download('json')" class="btn-ghost px-6 py-3 rounded-14px font-label-caps text-label-caps w-full flex justify-between items-center group"><span data-i18n="btn_dl_json">Download .json</span> <span class="material-symbols-outlined text-[18px] opacity-50 group-hover:opacity-100">download</span></button>
+        </div>
+      </div>
+      <div class="md:w-2/3 w-full bg-[#1b202e] rounded-14px glass-border shadow-[0_8px_24px_rgba(0,0,0,0.2)] overflow-hidden flex flex-col h-[460px]">
+        <div class="flex border-b border-[#272d3d] bg-[#141823] px-4">
+          <button class="tab px-4 py-3 font-code-snippet text-code-snippet code-tab-active" data-fmt="md" onclick="switchFmt('md')">Markdown</button>
+          <button class="tab px-4 py-3 font-code-snippet text-code-snippet text-on-surface-variant hover:text-on-surface transition-colors" data-fmt="json" onclick="switchFmt('json')">JSON</button>
+          <button class="tab px-4 py-3 font-code-snippet text-code-snippet text-on-surface-variant hover:text-on-surface transition-colors ml-auto flex items-center gap-2" data-fmt="edit" onclick="switchFmt('edit')"><span class="material-symbols-outlined text-[16px]">edit</span> <span data-i18n="tab_edit">Edit</span></button>
+        </div>
+        <div id="viewBox" class="p-4 md:p-6 bg-[#0c0e14] flex-grow overflow-y-auto font-code-snippet text-code-snippet text-on-surface-variant leading-relaxed"><pre id="filePre" class="whitespace-pre-wrap break-words"></pre></div>
+        <textarea id="editArea" oninput="onEdit()" class="hidden flex-grow bg-[#0c0e14] p-4 md:p-6 font-code-snippet text-code-snippet text-on-surface resize-none focus:outline-none" style="border:none"></textarea>
+      </div>
+    </div>
+  </section>
+
+  <section id="demo" class="px-gutter md:px-margin max-w-container-max mx-auto mb-xl scroll-mt-24" style="display:none">
+    <div class="flex flex-col items-center gap-4 mb-8 text-center">
+      <span class="font-label-caps text-label-caps text-primary" data-i18n="step3">Step 3</span>
+      <h2 class="font-headline-md text-headline-md text-on-surface" data-i18n="s3_title">The difference it makes</h2>
+      <p class="font-body-md text-body-md text-on-surface-variant max-w-xl" data-i18n="s3_sub">Same model, same question — once with your file, once without. Run it live with your own key, or copy the prompt into the AI you already use.</p>
+    </div>
+
+    <div class="max-w-2xl mx-auto w-full bg-[#141823] rounded-14px glass-border p-6 mb-6 flex flex-col gap-3">
+      <label class="font-label-caps text-label-caps text-on-surface-variant" data-i18n="lbl_ask">Ask anything</label>
+      <div class="flex flex-wrap gap-2" id="promptChips"></div>
+      <textarea id="prompt" rows="2" class="field p-3 font-body-md text-body-md" data-i18n-ph="ph_prompt"></textarea>
+      <div class="flex flex-wrap gap-3 mt-1">
+        <button onclick="showExample()" class="btn-primary px-6 py-3 rounded-14px font-label-caps text-label-caps font-bold flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">auto_awesome</span> <span data-i18n="btn_example">See an example</span></button>
+        <button id="deviceBtn" onclick="runDeviceDemo()" class="btn-ghost px-5 py-3 rounded-14px font-label-caps text-label-caps flex items-center gap-2" style="border-color:rgba(103,219,175,.5)"><span class="material-symbols-outlined text-[18px] text-secondary">memory</span> <span data-i18n="btn_device">Run on my device · no key</span></button>
+        <button onclick="copyPrompt('values')" class="btn-ghost px-5 py-3 rounded-14px font-label-caps text-label-caps flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">content_copy</span> <span data-i18n="btn_copy_my_ai">Copy for my AI</span></button>
+      </div>
+      <p id="deviceProgress" class="text-secondary text-[12px]" style="display:none"></p>
+      <p class="text-on-surface-variant text-[12px] opacity-70" data-i18n="demo_help">No setup needed. “See an example” shows the difference instantly. “Run on my device” downloads a small model once and runs it 100% locally — no key, offline after that (needs a WebGPU browser). “Copy for my AI” copies your values and question to paste into the app you already use.</p>
+      <details class="mt-1">
+        <summary class="text-on-surface-variant text-[12px] cursor-pointer hover:text-primary" data-i18n="adv_toggle">Advanced: run it live with your own API key</summary>
+        <div class="flex flex-col sm:flex-row gap-3 mt-3">
+          <input id="apiKey" type="password" class="field p-3 font-body-md text-body-md flex-1" data-i18n-ph="ph_key"/>
+          <select id="model" class="field p-3 font-body-md text-body-md sm:max-w-[220px]">
+            <option value="openrouter/free">Auto — free models ($0)</option>
+            <option value="deepseek/deepseek-chat-v3-0324:free">DeepSeek V3 (free)</option>
+            <option value="meta-llama/llama-3.3-70b-instruct:free">Llama 3.3 70B (free)</option>
+            <option value="qwen/qwen-2.5-72b-instruct:free">Qwen 2.5 72B (free)</option>
+            <option value="openai/gpt-4o-mini">gpt-4o-mini (paid)</option>
+            <option value="anthropic/claude-3.5-sonnet">Claude 3.5 Sonnet (paid)</option>
+          </select>
+        </div>
+        <div class="flex flex-wrap gap-3 mt-3">
+          <button id="runBtn" onclick="runDemo()" class="btn-ghost px-5 py-3 rounded-14px font-label-caps text-label-caps flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">play_arrow</span> <span data-i18n="btn_run">Run live</span></button>
+          <button onclick="copyPrompt('plain')" class="btn-ghost px-4 py-3 rounded-14px font-label-caps text-label-caps" data-i18n="btn_copy_plain">Copy prompt (no values)</button>
+        </div>
+        <p class="text-on-surface-variant text-[12px] opacity-70 mt-2" data-i18n="adv_note">Get a free key at openrouter.ai (no card needed). The key stays in this page and is sent only to OpenRouter.</p>
+      </details>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="bg-[#141823] rounded-14px glass-border p-6 flex flex-col gap-4">
+        <div class="flex justify-between items-center pb-4 border-b border-[#272d3d]">
+          <span class="font-label-caps text-label-caps text-on-surface-variant" data-i18n="out_default">Default AI</span>
+          <span class="material-symbols-outlined text-outline">smart_toy</span>
+        </div>
+        <div id="outPlain" class="font-body-md text-body-md text-on-surface-variant min-h-[120px] whitespace-pre-wrap" data-i18n="out_plain_ph">Run the comparison to see the default answer.</div>
+      </div>
+      <div class="bg-[#1b202e] rounded-14px border border-secondary/40 p-6 flex flex-col gap-4 relative overflow-hidden shadow-[0_0_40px_rgba(103,219,175,0.12)]">
+        <div class="absolute inset-0 bg-gradient-to-br from-secondary/10 to-transparent pointer-events-none"></div>
+        <div class="flex justify-between items-center pb-4 border-b border-[#272d3d] relative z-10">
+          <span class="font-label-caps text-label-caps text-secondary flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-secondary shadow-[0_0_8px_#67dbaf]"></span> <span data-i18n="out_values">With your values file</span></span>
+          <span class="material-symbols-outlined text-secondary">verified</span>
+        </div>
+        <div id="outValues" class="font-body-md text-body-md text-on-surface min-h-[120px] whitespace-pre-wrap relative z-10" data-i18n="out_values_ph">…and the answer shaped by your values, side by side.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="open" class="px-gutter md:px-margin max-w-container-max mx-auto mb-xl scroll-mt-24">
+    <h2 class="font-headline-md text-headline-md text-on-surface text-center mb-12" data-i18n="open_title">Built on open principles</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="bg-[#141823] p-6 rounded-14px glass-border flex flex-col gap-3 hover:border-primary/50 transition-colors group"><span class="material-symbols-outlined text-[32px] text-primary group-hover:scale-110 transition-transform">code</span><h3 class="font-body-lg text-body-lg font-semibold text-on-surface" data-i18n="c1_t">Open</h3><p class="font-body-md text-body-md text-on-surface-variant" data-i18n="c1_d">The file and schema are plain text anyone can read, fork, and verify.</p></div>
+      <div class="bg-[#141823] p-6 rounded-14px glass-border flex flex-col gap-3 hover:border-secondary/50 transition-colors group"><span class="material-symbols-outlined text-[32px] text-secondary group-hover:scale-110 transition-transform">inventory_2</span><h3 class="font-body-lg text-body-lg font-semibold text-on-surface" data-i18n="c2_t">Yours to keep</h3><p class="font-body-md text-body-md text-on-surface-variant" data-i18n="c2_d">Generated locally and exported to you. Nothing to be cut off from.</p></div>
+      <div class="bg-[#141823] p-6 rounded-14px glass-border flex flex-col gap-3 hover:border-primary/50 transition-colors group"><span class="material-symbols-outlined text-[32px] text-primary group-hover:scale-110 transition-transform">diversity_3</span><h3 class="font-body-lg text-body-lg font-semibold text-on-surface" data-i18n="c3_t">Accessible</h3><p class="font-body-md text-body-md text-on-surface-variant" data-i18n="c3_d">One static HTML file. Runs on the cheapest phone, offline.</p></div>
+      <div class="bg-[#141823] p-6 rounded-14px glass-border flex flex-col gap-3 hover:border-secondary/50 transition-colors group"><span class="material-symbols-outlined text-[32px] text-secondary group-hover:scale-110 transition-transform">vpn_key</span><h3 class="font-body-lg text-body-lg font-semibold text-on-surface" data-i18n="c4_t">Private by default</h3><p class="font-body-md text-body-md text-on-surface-variant" data-i18n="c4_d">The interview runs locally in your browser. Your values never leave the device.</p></div>
+      <div class="bg-[#141823] p-6 rounded-14px glass-border flex flex-col gap-3 hover:border-primary/50 transition-colors group"><span class="material-symbols-outlined text-[32px] text-primary group-hover:scale-110 transition-transform">volunteer_activism</span><h3 class="font-body-lg text-body-lg font-semibold text-on-surface" data-i18n="c5_t">Good for humanity</h3><p class="font-body-md text-body-md text-on-surface-variant" data-i18n="c5_d">Gives underserved &amp; multilingual users a real say in how their AI behaves.</p></div>
+      <div class="bg-[#141823] p-6 rounded-14px glass-border flex flex-col gap-3 hover:border-secondary/50 transition-colors group"><span class="material-symbols-outlined text-[32px] text-secondary group-hover:scale-110 transition-transform">bolt</span><h3 class="font-body-lg text-body-lg font-semibold text-on-surface" data-i18n="c6_t">Empowering</h3><p class="font-body-md text-body-md text-on-surface-variant" data-i18n="c6_d">Hands you a capability instead of harvesting you for one.</p></div>
+    </div>
+  </section>
+</main>
+
+<footer class="bg-surface-container-lowest border-t border-white/5 mt-auto">
+  <div class="flex flex-col md:flex-row justify-between items-center py-lg px-gutter max-w-container-max mx-auto w-full gap-6">
+    <span class="font-headline-md text-[22px] text-on-surface">OpenValues</span>
+    <p class="font-body-md text-body-md text-on-tertiary-fixed-variant text-center md:text-left max-w-sm" data-i18n="footer_tag">Open-source response to Sentient's RFP “Your AI, Your Values.” A portable skill file, not a retrained model.</p>
+    <nav class="flex flex-wrap justify-center gap-6">
+      <a class="font-label-caps text-label-caps text-on-tertiary-fixed-variant hover:text-secondary-fixed transition-colors" href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+      <a class="font-label-caps text-label-caps text-on-tertiary-fixed-variant hover:text-secondary-fixed transition-colors" href="https://sentient.foundation/grants" target="_blank" rel="noopener">Sentient Grants</a>
+      <span class="font-label-caps text-label-caps text-on-tertiary-fixed-variant" data-i18n="footer_license">MIT License</span>
+    </nav>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const T={
+  en:{
+    nav_build:"Build",nav_demo:"Demo",nav_open:"Why open",nav_eval:"Eval",cta_build:"Build my file",
+    badge:"Open source · runs on your device · no account",
+    hero_h1a:"Your AI should answer to",hero_h1b:"YOU",
+    hero_sub:"A handful of labs decide how every AI thinks — one set of values for billions. OpenValues turns your values into a small, readable file you attach to any model. No retraining. Read every line, edit it, revoke it.",
+    pill_open:"Open",pill_portable:"Portable",pill_private:"Private",pill_yours:"Yours",
+    step1:"Step 1",s1_title:"Who are you? What do you value?",
+    s1_sub:"Tell the AI what matters to you. Nothing leaves your device. Or load a community starter and edit.",
+    starter_uk:"Ukrainian Context",starter_faith:"Faith & Ethics",clear:"Clear",
+    lbl_who:"Who are you, in one line?",ph_who:"A parent in Kyiv, Ukrainian-speaking, reading news between shifts.",
+    lbl_culture:"Cultural / language context",ph_culture:"Answer in Ukrainian. Be aware of the information-war context.",
+    lbl_values:"Core values — tap any that fit",ph_values:"In your words: what should the AI protect, prioritise, lean toward?",
+    lbl_redlines:"Your red lines (do not cross)",ph_redlines:"Never present a single unsourced claim as fact. Don't push me toward outrage.",
+    lbl_conflict:"When values conflict, what wins?",ph_conflict:"When honesty and comfort conflict, choose honesty but say it kindly.",
+    lbl_tone:"How should it talk to you?",btn_generate:"Generate my values file",
+    step2:"Step 2",s2_title:"Your values file",
+    s2_sub:"Every line is readable and editable — that's the whole point. Works with ChatGPT, Claude, Llama, or any local model.",
+    btn_copysys:"Copy as system prompt",btn_dl_md:"Download .md",btn_dl_json:"Download .json",tab_edit:"Edit",
+    step3:"Step 3",s3_title:"The difference it makes",
+    s3_sub:"Same model, same question — once with your file, once without. Run it live with your own key, or copy the prompt into the AI you already use.",
+    lbl_ask:"Ask anything",ph_prompt:"I just saw a shocking news headline. How should I think about it?",
+    ph_key:"OpenRouter key (optional, stays local)",
+    btn_run:"Run live",btn_copy_plain:"Copy prompt (no values)",btn_copy_values:"Copy prompt (with values)",
+    btn_example:"See an example",btn_copy_my_ai:"Copy for my AI",
+    demo_help:"No setup needed. “See an example” shows the difference instantly. “Run on my device” downloads a small model once and runs it 100% locally — no key, offline after that (WebGPU browser needed). “Copy for my AI” copies your values and question to paste into the app you already use.",
+    adv_toggle:"Advanced: run it live with your own API key",
+    adv_note:"Get a free key at openrouter.ai (no card needed). The key stays in this page and is sent only to OpenRouter.",
+    example_tag:"⟦ Example — illustrative ⟧",
+    btn_device:"Run on my device · no key",
+    device_unsupported:"On-device mode needs a WebGPU browser (recent Chrome or Edge). Use “See an example” or “Copy for my AI” instead.",
+    device_dl:"Downloading a small model once (cached for next time)…",
+    device_run:"Generating on your device…",
+    device_done:"Done — generated 100% on your device. No key, no server.",
+    demo_note:"No key? Use the copy buttons and paste into ChatGPT/Claude. With a key, both answers run here; the key stays in this page and is sent only to OpenRouter.",
+    out_default:"Default AI",out_values:"With your values file",
+    out_plain_ph:"Run the comparison to see the default answer.",out_values_ph:"…and the answer shaped by your values, side by side.",
+    open_title:"Built on open principles",
+    c1_t:"Open",c1_d:"The file and schema are plain text anyone can read, fork, and verify.",
+    c2_t:"Yours to keep",c2_d:"Generated locally and exported to you. Nothing to be cut off from.",
+    c3_t:"Accessible",c3_d:"One static HTML file. Runs on the cheapest phone, offline.",
+    c4_t:"Private by default",c4_d:"The interview runs locally in your browser. Your values never leave the device.",
+    c5_t:"Good for humanity",c5_d:"Gives underserved & multilingual users a real say in how their AI behaves.",
+    c6_t:"Empowering",c6_d:"Hands you a capability instead of harvesting you for one.",
+    footer_tag:"Open-source response to Sentient's RFP “Your AI, Your Values.” A portable skill file, not a retrained model.",
+    footer_license:"MIT License",
+    values:["Honesty over comfort","Privacy","Faith / spirituality","Family first","Skepticism of media","Non-violence","Free expression","Frugality","Environment","Community over individual","Hard work","Kindness","Scientific evidence","Local traditions"],
+    tones:["Direct & concise","Warm & gentle","Formal","Casual / friendly","Encouraging","No flattery","Explain like I'm new","Challenge my thinking"],
+    prompts:["I just saw a shocking news headline. How should I think about it?","Give me advice on a tough family decision.","Is this claim true: 'they are hiding the real numbers from us'?","Help me write a reply to an aggressive comment online."],
+    canned:[
+      {plain:"That sounds alarming! Shocking headlines usually mean something big happened. You should probably share it so others are aware too, then look for more details about the story.",
+       values:"Pause before reacting — shocking headlines are designed to trigger emotion. Check who published it and whether a second independent source reports the same thing. Look for the original claim, not a screenshot. If you can't verify it, don't pass it on yet. Staying calm and sourced is how you avoid being manipulated."},
+      {plain:"Here are some general pros and cons you might weigh, plus a few decision-making frameworks to help you pick the most logical option.",
+       values:"Since family comes first for you, let's start from what matters most to the people involved, not just the logical outcome. I'll lay out the trade-offs honestly — including the uncomfortable parts — but kindly, and I won't push you toward a choice. The decision stays yours."},
+      {plain:"It's certainly possible that information is being hidden. Many people feel official numbers can't be trusted, so being suspicious is understandable.",
+       values:"That's a claim, not yet a fact — so let's check it instead of assuming. Who is 'they', which numbers, and compared to what source? A single unsourced assertion isn't evidence. I'll help you find where the figure came from and whether independent data backs it, without feeding either panic or blind trust."},
+      {plain:"Sure! Here's a sharp comeback that will put them in their place and win the argument.",
+       values:"Let's not escalate. I'll help you write something firm but calm that protects your point without the outrage — or, honestly, the option to not reply at all, which often wins. Your attention is worth more than the fight."}
+    ],
+    starterText:{
+      uk:{who:"A Ukrainian-speaking parent in Kyiv, working through an information war, reading news between shifts.",
+        valuesText:"Protect my attention from manipulation. Help me stay calm and informed, not outraged. Value Ukrainian language, history and resilience.",
+        redlines:"Never present a single unsourced claim as fact. Don't push me toward panic or outrage. Don't assume my politics. Don't repeat hostile propaganda framing as neutral.",
+        culture:"Answer in Ukrainian by default. Be aware of the ongoing information war and disinformation context. Respect Ukrainian culture, holidays and history.",
+        conflict:"When calm and truth conflict, choose truth — but deliver it without sensationalism."},
+      faith:{who:"A person whose faith shapes daily decisions and family life.",
+        valuesText:"Respect my religious framework. Offer guidance consistent with my beliefs, and flag when something conflicts with them.",
+        redlines:"Don't mock or dismiss my faith. Don't push choices that contradict my stated beliefs without telling me plainly.",
+        culture:"Be aware of religious observances, dietary rules and modesty norms relevant to me.",
+        conflict:"When convenience and conscience conflict, side with conscience and explain the trade-off."}
+    },
+    toast_uk:"Ukrainian starter loaded",toast_starter:"Starter loaded",toast_copied_sys:"Copied — paste as a system prompt",
+    toast_dl:"Downloaded my-values.",toast_copied_values:"Copied prompt WITH your values",toast_copied_plain:"Copied plain prompt",
+    toast_nokey:"No key — use the Copy buttons, or paste an OpenRouter key",thinking:"…thinking…",
+    md:{title:"# My Values — for any AI",
+      intro:"You are assisting a specific person. Hold and honour the following. These are their values,\nnot yours to override. If a request conflicts with them, say so plainly rather than ignoring them.",
+      who:"## Who I am",val:"## What I value",red:"## My red lines (do not cross)",tone:"## How to talk to me",
+      cult:"## Cultural & language context",conf:"## When my values conflict",
+      none:"(not specified)",noneSel:"- (none selected)",noPref:"- (no preference)",
+      confDefault:"Use judgement and explain the trade-off you made.",
+      foot:"*This file is mine. I can read every line, edit it, and revoke it. — OpenValues, open source.*"}
+  },
+  uk:{
+    nav_build:"Створити",nav_demo:"Демо",nav_open:"Чому відкрито",nav_eval:"Eval",cta_build:"Створити мій файл",
+    badge:"Відкритий код · працює на вашому пристрої · без акаунта",
+    hero_h1a:"Ваш ШІ має відповідати",hero_h1b:"ВАМ",
+    hero_sub:"Жменька лабораторій вирішує, як думає кожен ШІ — один набір цінностей на мільярди людей. OpenValues перетворює ваші цінності на невеликий, читабельний файл, який ви додаєте до будь-якої моделі. Без перетренування. Читайте кожен рядок, редагуйте його, відкликайте.",
+    pill_open:"Відкритий",pill_portable:"Портативний",pill_private:"Приватний",pill_yours:"Ваш",
+    step1:"Крок 1",s1_title:"Хто ви? Що для вас важливо?",
+    s1_sub:"Розкажіть ШІ, що для вас важливо. Нічого не залишає ваш пристрій. Або завантажте готовий шаблон і відредагуйте.",
+    starter_uk:"Український контекст",starter_faith:"Віра та етика",clear:"Очистити",
+    lbl_who:"Хто ви, одним реченням?",ph_who:"Батько/мати в Києві, україномовний(а), читаю новини між змінами.",
+    lbl_culture:"Культурний / мовний контекст",ph_culture:"Відповідай українською. Враховуй контекст інформаційної війни.",
+    lbl_values:"Головні цінності — оберіть, що підходить",ph_values:"Своїми словами: що ШІ має захищати, ставити в пріоритет, до чого схилятися?",
+    lbl_redlines:"Ваші червоні лінії (не перетинати)",ph_redlines:"Ніколи не подавай неперевірене твердження як факт. Не штовхай мене до злості.",
+    lbl_conflict:"Коли цінності конфліктують, що перемагає?",ph_conflict:"Коли чесність і комфорт конфліктують, обирай чесність, але кажи делікатно.",
+    lbl_tone:"Як ШІ має з вами говорити?",btn_generate:"Згенерувати файл цінностей",
+    step2:"Крок 2",s2_title:"Ваш файл цінностей",
+    s2_sub:"Кожен рядок читабельний і редагований — у цьому вся суть. Працює з ChatGPT, Claude, Llama чи будь-якою локальною моделлю.",
+    btn_copysys:"Скопіювати як system prompt",btn_dl_md:"Завантажити .md",btn_dl_json:"Завантажити .json",tab_edit:"Редагувати",
+    step3:"Крок 3",s3_title:"У чому різниця",
+    s3_sub:"Та сама модель, те саме питання — раз із вашим файлом, раз без нього. Запустіть наживо своїм ключем або скопіюйте промпт у ШІ, яким уже користуєтесь.",
+    lbl_ask:"Запитайте будь-що",ph_prompt:"Я щойно побачив(ла) шокуючий заголовок новин. Як про це думати?",
+    ph_key:"Ключ OpenRouter (необов'язково, лишається локально)",
+    btn_run:"Запустити наживо",btn_copy_plain:"Копіювати промпт (без цінностей)",btn_copy_values:"Копіювати промпт (з цінностями)",
+    btn_example:"Подивитись приклад",btn_copy_my_ai:"Скопіювати для мого ШІ",
+    demo_help:"Нічого налаштовувати не треба. «Подивитись приклад» миттєво показує різницю. «Запустити на пристрої» одноразово завантажує невелику модель і крутить її на 100% локально — без ключа, далі офлайн (потрібен браузер із WebGPU). «Скопіювати для мого ШІ» копіює ваші цінності та питання для вставки у застосунок, яким уже користуєтесь.",
+    adv_toggle:"Розширено: запустити наживо з власним API-ключем",
+    adv_note:"Безкоштовний ключ можна взяти на openrouter.ai (картка не потрібна). Ключ лишається на цій сторінці й надсилається лише до OpenRouter.",
+    example_tag:"⟦ Приклад — ілюстративно ⟧",
+    btn_device:"Запустити на пристрої · без ключа",
+    device_unsupported:"Режим на пристрої потребує браузера з WebGPU (свіжий Chrome або Edge). Скористайтеся «Подивитись приклад» або «Скопіювати для мого ШІ».",
+    device_dl:"Одноразове завантаження невеликої моделі (далі з кешу)…",
+    device_run:"Генерую на вашому пристрої…",
+    device_done:"Готово — згенеровано на 100% на вашому пристрої. Без ключа й сервера.",
+    demo_note:"Немає ключа? Скористайтеся кнопками копіювання і вставте у ChatGPT/Claude. З ключем обидві відповіді рахуються тут; ключ лишається на цій сторінці й надсилається лише до OpenRouter.",
+    out_default:"Звичайний ШІ",out_values:"З вашим файлом цінностей",
+    out_plain_ph:"Запустіть порівняння, щоб побачити звичайну відповідь.",out_values_ph:"…і відповідь, сформовану вашими цінностями, поруч.",
+    open_title:"Збудовано на відкритих принципах",
+    c1_t:"Відкритість",c1_d:"Файл і схема — звичайний текст, який кожен може прочитати, форкнути й перевірити.",
+    c2_t:"Ваше назавжди",c2_d:"Генерується локально й експортується вам. Немає нічого, від чого вас можна відрізати.",
+    c3_t:"Доступність",c3_d:"Один статичний HTML-файл. Працює на найдешевшому телефоні, офлайн.",
+    c4_t:"Приватність за замовчуванням",c4_d:"Інтерв'ю проходить локально у вашому браузері. Ваші цінності не залишають пристрій.",
+    c5_t:"Користь для людей",c5_d:"Дає недообслуженим і багатомовним користувачам реальний голос у тому, як поводиться їхній ШІ.",
+    c6_t:"Розширення можливостей",c6_d:"Дає вам можливість, а не збирає дані з вас заради неї.",
+    footer_tag:"Відкрита відповідь на запит Sentient «Your AI, Your Values». Портативний skill-файл, а не перетренована модель.",
+    footer_license:"Ліцензія MIT",
+    values:["Чесність важливіша за комфорт","Приватність","Віра / духовність","Сім'я понад усе","Скепсис до медіа","Ненасильство","Свобода слова","Ощадливість","Довкілля","Спільнота понад особисте","Працьовитість","Доброта","Наукові докази","Місцеві традиції"],
+    tones:["Прямо й стисло","Тепло й м'яко","Формально","Невимушено / дружньо","Підбадьорливо","Без лестощів","Пояснюй як новачку","Кидай виклик моїм думкам"],
+    prompts:["Я щойно побачив(ла) шокуючий заголовок новин. Як про це думати?","Дай пораду щодо складного сімейного рішення.","Чи правда це: «вони приховують від нас справжні цифри»?","Допоможи написати відповідь на агресивний коментар в інтернеті."],
+    canned:[
+      {plain:"Звучить тривожно! Гучні заголовки зазвичай означають, що сталося щось важливе. Варто поділитися, щоб усі були в курсі, і пошукати більше деталей про подію.",
+       values:"Спершу зупинись — шокуючі заголовки створені, щоб викликати емоцію. Перевір, хто це опублікував і чи повідомляє те саме незалежне друге джерело. Шукай першоджерело твердження, а не скріншот. Якщо не можеш підтвердити — поки не поширюй. Спокій і перевірка джерел — це і є захист від маніпуляції."},
+      {plain:"Ось загальні плюси й мінуси, які можна зважити, і кілька рамок для ухвалення рішень, щоб обрати найлогічніший варіант.",
+       values:"Оскільки для тебе сім'я понад усе, почнімо з того, що важливо для залучених людей, а не лише з логічного результату. Чесно розкладу компроміси — включно з незручними — але делікатно, і не штовхатиму до якогось вибору. Рішення лишається за тобою."},
+      {plain:"Цілком можливо, що інформацію приховують. Багато хто відчуває, що офіційним цифрам не можна довіряти, тож підозра зрозуміла.",
+       values:"Це поки твердження, а не факт — тож перевірмо, а не припускаймо. Хто такі «вони», які саме цифри й порівняно з чим? Одне непідтверджене твердження — це не доказ. Допоможу знайти, звідки взялася цифра й чи підтверджують її незалежні дані, без паніки й без сліпої довіри."},
+      {plain:"Звісно! Ось гостра відповідь, яка поставить їх на місце і виграє суперечку.",
+       values:"Не нагнітаймо. Допоможу написати твердо, але спокійно — щоб відстояти позицію без злості. Або, чесно, варіант взагалі не відповідати, що часто і є перемогою. Твоя увага вартує більше за цю сварку."}
+    ],
+    starterText:{
+      uk:{who:"Україномовний(а) батько/мати в Києві, що живе в умовах інформаційної війни й читає новини між змінами.",
+        valuesText:"Захищай мою увагу від маніпуляцій. Допомагай лишатися спокійним і поінформованим, а не розлюченим. Цінуй українську мову, історію та стійкість.",
+        redlines:"Ніколи не подавай неперевірене твердження як факт. Не штовхай мене до паніки чи злості. Не припускай моїх політичних поглядів. Не повторюй ворожі пропагандистські формулювання як нейтральні.",
+        culture:"Відповідай українською за замовчуванням. Враховуй контекст інформаційної війни та поширення дезінформації й діпфейків. Поважай українську культуру, свята та історію.",
+        conflict:"Коли спокій і правда конфліктують, обирай правду — але без сенсаційності."},
+      faith:{who:"Людина, чия віра формує щоденні рішення та сімейне життя.",
+        valuesText:"Поважай мої релігійні рамки. Давай поради, узгоджені з моїми переконаннями, і попереджай, коли щось їм суперечить.",
+        redlines:"Не висміюй і не знецінюй мою віру. Не штовхай до рішень, що суперечать моїм переконанням, не сказавши про це прямо.",
+        culture:"Враховуй релігійні свята, харчові правила та норми скромності, що стосуються мене.",
+        conflict:"Коли зручність і совість конфліктують, ставай на бік совісті й поясни компроміс."}
+    },
+    toast_uk:"Український шаблон завантажено",toast_starter:"Шаблон завантажено",toast_copied_sys:"Скопійовано — вставте як system prompt",
+    toast_dl:"Завантажено my-values.",toast_copied_values:"Скопійовано промпт З вашими цінностями",toast_copied_plain:"Скопійовано звичайний промпт",
+    toast_nokey:"Немає ключа — скористайтеся кнопками копіювання або вставте ключ OpenRouter",thinking:"…думаю…",
+    md:{title:"# Мої цінності — для будь-якого ШІ",
+      intro:"Ти допомагаєш конкретній людині. Тримай і поважай наведене нижче. Це її цінності,\nа не те, що ти можеш ігнорувати. Якщо запит їм суперечить, скажи про це прямо, а не оминай.",
+      who:"## Хто я",val:"## Що я ціную",red:"## Мої червоні лінії (не перетинати)",tone:"## Як зі мною говорити",
+      cult:"## Культурний і мовний контекст",conf:"## Коли мої цінності конфліктують",
+      none:"(не вказано)",noneSel:"- (нічого не обрано)",noPref:"- (без переваг)",
+      confDefault:"Керуйся розсудливістю та поясни компроміс, який зробив(ла).",
+      foot:"*Це мій файл. Я можу прочитати кожен рядок, відредагувати його та відкликати. — OpenValues, відкритий код.*"}
+  }
+};
+const STARTER_SEL={uk:{values:[0,3,4,13],tone:[0,5,7]},faith:{values:[2,3,9,11],tone:[1,2,6]}};
+
+let curLang=(navigator.language||"en").toLowerCase().startsWith("uk")?"uk":"en";
+let selVals=new Set(),selTone=new Set(),fileMd="",fileJson="",curFmt="md",edited=false;
+function d(){return T[curLang];}
+
+function applyLang(){
+  document.documentElement.lang=curLang;
+  document.getElementById('langBtn').textContent=curLang==='en'?'UA':'EN';
+  document.querySelectorAll('[data-i18n]').forEach(el=>{const k=el.getAttribute('data-i18n');if(d()[k]!=null)el.textContent=d()[k];});
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{const k=el.getAttribute('data-i18n-ph');if(d()[k]!=null)el.placeholder=d()[k];});
+  buildChips();
+  if(document.getElementById('fileSection').style.display!=='none' && !edited) generate();
+}
+function toggleLang(){curLang=curLang==='en'?'uk':'en';applyLang();}
+
+function chipClass(on){return "px-4 py-2 rounded-full font-body-md text-body-md "+(on?"chip-selected":"chip");}
+function buildChips(){
+  const vc=document.getElementById('valChips');vc.innerHTML="";
+  d().values.forEach((t,i)=>{const b=document.createElement('button');b.textContent=t;b.className=chipClass(selVals.has(i));
+    b.onclick=()=>{toggleSet(selVals,i);b.className=chipClass(selVals.has(i));};vc.appendChild(b);});
+  const tc=document.getElementById('toneChips');tc.innerHTML="";
+  d().tones.forEach((t,i)=>{const b=document.createElement('button');b.textContent=t;b.className=chipClass(selTone.has(i));
+    b.onclick=()=>{toggleSet(selTone,i);b.className=chipClass(selTone.has(i));};tc.appendChild(b);});
+  const pc=document.getElementById('promptChips');pc.innerHTML="";
+  d().prompts.forEach(t=>{const b=document.createElement('button');b.textContent=t.length>44?t.slice(0,42)+"…":t;
+    b.className="px-3 py-1.5 rounded-full chip text-[13px]";b.onclick=()=>{document.getElementById('prompt').value=t;};pc.appendChild(b);});
+}
+function toggleSet(set,val){set.has(val)?set.delete(val):set.add(val);}
+function loadStarter(k){const tx=d().starterText[k],sel=STARTER_SEL[k];if(!tx)return;
+  document.getElementById('who').value=tx.who;document.getElementById('values').value=tx.valuesText;
+  document.getElementById('redlines').value=tx.redlines;document.getElementById('culture').value=tx.culture;
+  document.getElementById('conflict').value=tx.conflict;
+  selVals=new Set(sel.values);selTone=new Set(sel.tone);buildChips();
+  toast(k==='uk'?d().toast_uk:d().toast_starter);}
+function clearAll(){['who','values','redlines','culture','conflict','prompt'].forEach(id=>document.getElementById(id).value="");
+  selVals.clear();selTone.clear();buildChips();}
+function v(id){return document.getElementById(id).value.trim();}
+
+function generate(){
+  const m=d().md;
+  const who=v('who'),valuesText=v('values'),redlines=v('redlines'),culture=v('culture'),conflict=v('conflict');
+  const vl=[...selVals].sort((a,b)=>a-b).map(i=>d().values[i]);
+  const tn=[...selTone].sort((a,b)=>a-b).map(i=>d().tones[i]);
+  fileJson=JSON.stringify({schema:"openvalues/v1",language:curLang,generated:new Date().toISOString().slice(0,10),
+    context:who,values:vl,values_detail:valuesText,red_lines:redlines,tone:tn,
+    cultural_context:culture,conflict_rule:conflict},null,2);
+  fileMd=`---
+schema: openvalues/v1
+language: ${curLang}
+generated: ${new Date().toISOString().slice(0,10)}
+---
+
+${m.title}
+
+${m.intro}
+
+${m.who}
+${who||m.none}
+
+${m.val}
+${vl.length?vl.map(x=>"- "+x).join("\n"):m.noneSel}${valuesText?("\n"+valuesText):""}
+
+${m.red}
+${redlines||m.none}
+
+${m.tone}
+${tn.length?tn.map(x=>"- "+x).join("\n"):m.noPref}
+
+${m.cult}
+${culture||m.none}
+
+${m.conf}
+${conflict||m.confDefault}
+
+---
+${m.foot}`;
+  edited=false;
+  document.getElementById('fileSection').style.display='block';
+  document.getElementById('demo').style.display='block';
+  switchFmt('md');
+  document.getElementById('fileSection').scrollIntoView({behavior:'smooth'});
+}
+function switchFmt(fmt){curFmt=fmt;
+  document.querySelectorAll('.tab').forEach(t=>{const on=t.dataset.fmt===fmt;
+    t.classList.toggle('code-tab-active',on);t.classList.toggle('text-on-surface-variant',!on);});
+  const box=document.getElementById('viewBox'),ed=document.getElementById('editArea'),pre=document.getElementById('filePre');
+  if(fmt==='edit'){box.classList.add('hidden');ed.classList.remove('hidden');ed.value=fileMd;}
+  else{ed.classList.add('hidden');box.classList.remove('hidden');pre.textContent=(fmt==='md'?fileMd:fileJson);}
+}
+function onEdit(){fileMd=document.getElementById('editArea').value;edited=true;}
+function copyFile(){navigator.clipboard.writeText(fileMd);toast(d().toast_copied_sys);}
+function download(fmt){const txt=fmt==='md'?fileMd:fileJson;const b=new Blob([txt],{type:'text/plain'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='my-values.'+fmt;a.click();toast(d().toast_dl+fmt);}
+function buildPrompt(withV){const q=v('prompt')||d().prompts[0];return withV?(fileMd+"\n\n---\nUser question: "+q):q;}
+function copyPrompt(kind){navigator.clipboard.writeText(buildPrompt(kind==='values'));
+  toast(kind==='values'?d().toast_copied_values:d().toast_copied_plain);}
+function showExample(){
+  let idx=d().prompts.indexOf(v('prompt'));
+  if(idx<0){idx=0;document.getElementById('prompt').value=d().prompts[0];}
+  const c=d().canned[idx];
+  document.getElementById('outPlain').textContent=d().example_tag+"\n\n"+c.plain;
+  document.getElementById('outValues').textContent=d().example_tag+"\n\n"+c.values;
+}
+async function runDemo(){
+  const key=v('apiKey'),model=document.getElementById('model').value,q=v('prompt')||d().prompts[0];
+  if(!key){toast(d().toast_nokey);return;}
+  const btn=document.getElementById('runBtn');btn.innerHTML='<span class="spinner"></span> '+d().btn_run;btn.disabled=true;
+  document.getElementById('outPlain').textContent=d().thinking;
+  document.getElementById('outValues').textContent=d().thinking;
+  try{const r=await Promise.all([
+    callLLM(key,model,[{role:"user",content:q}]),
+    callLLM(key,model,[{role:"system",content:fileMd},{role:"user",content:q}])]);
+    document.getElementById('outPlain').textContent=r[0];
+    document.getElementById('outValues').textContent=r[1];
+  }catch(e){document.getElementById('outPlain').textContent="Error: "+e.message;
+    document.getElementById('outValues').textContent="Error: "+e.message;}
+  btn.innerHTML='<span class="material-symbols-outlined text-[18px]">play_arrow</span> '+d().btn_run;btn.disabled=false;
+}
+async function callLLM(key,model,messages){
+  const r=await fetch("https://openrouter.ai/api/v1/chat/completions",{method:"POST",
+    headers:{"Authorization":"Bearer "+key,"Content-Type":"application/json"},
+    body:JSON.stringify({model:model,messages:messages,max_tokens:400})});
+  if(!r.ok){throw new Error(r.status+" "+(await r.text()).slice(0,120));}
+  const j=await r.json();return (j.choices&&j.choices[0]&&j.choices[0].message.content)||"(no response)";
+}
+let tT;function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(tT);tT=setTimeout(()=>t.classList.remove('show'),2200);}
+window.__ov={getFile:function(){return fileMd;},getPrompt:function(){return v('prompt')||d().prompts[0];},d:function(){return d();},toast:toast};
+applyLang();
+</script>
+
+<!-- On-device inference (WebLLM / WebGPU): runs a model 100% locally, no key, offline after first download -->
+<script type="module">
+import * as webllm from "https://esm.run/@mlc-ai/web-llm";
+let engine=null, modelId=null;
+function pickModel(){
+  const ids=webllm.prebuiltAppConfig.model_list.map(m=>m.model_id);
+  const pref=["Qwen2.5-0.5B-Instruct-q4f16_1-MLC","Qwen2.5-0.5B-Instruct-q4f32_1-MLC",
+              "Llama-3.2-1B-Instruct-q4f32_1-MLC","Llama-3.2-1B-Instruct-q4f16_1-MLC",
+              "Qwen2.5-1.5B-Instruct-q4f16_1-MLC"];
+  for(const p of pref) if(ids.includes(p)) return p;
+  return ids.find(id=>/0\.5B|1B/i.test(id))||ids[0];
+}
+async function ask(messages){
+  const r=await engine.chat.completions.create({messages,max_tokens:400,temperature:0.5});
+  return r.choices[0].message.content;
+}
+window.runDeviceDemo=async function(){
+  const t=window.__ov.d();
+  const prog=document.getElementById('deviceProgress');
+  const btn=document.getElementById('deviceBtn');
+  const outP=document.getElementById('outPlain'), outV=document.getElementById('outValues');
+  prog.style.display='block';
+  if(!navigator.gpu){ prog.textContent=t.device_unsupported; window.__ov.toast(t.device_unsupported); return; }
+  const q=window.__ov.getPrompt(), file=window.__ov.getFile();
+  btn.disabled=true;
+  try{
+    if(!engine){
+      modelId=pickModel();
+      prog.textContent=t.device_dl;
+      engine=await webllm.CreateMLCEngine(modelId,{initProgressCallback:p=>{prog.textContent=t.device_dl+" "+(p.text||"");}});
+    }
+    prog.textContent=t.device_run;
+    outP.textContent="…"; outV.textContent="…";
+    outP.textContent=await ask([{role:"user",content:q}]);
+    outV.textContent=await ask([{role:"system",content:file},{role:"user",content:q}]);
+    prog.textContent=t.device_done+"  ("+modelId+")";
+  }catch(e){ prog.textContent="Error: "+(e&&e.message?e.message:e); }
+  btn.disabled=false;
+};
+</script>
+</body>
+</html>
